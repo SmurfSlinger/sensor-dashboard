@@ -1,5 +1,7 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 type TankStatus = "LOW" | "OK" | "HIGH" | "CRITICAL";
 
@@ -52,6 +54,15 @@ function validateReadingInput(body: unknown): ReadingInput | string {
   return { tankId: tankId.trim(), tankName: tankName.trim(), levelPercent };
 }
 
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
 /** Shared ingestion path — REST and future MQTT should both call this. */
 function ingestReading(input: ReadingInput): TankReading {
   const reading: TankReading = {
@@ -63,6 +74,7 @@ function ingestReading(input: ReadingInput): TankReading {
   };
 
   readings.push(reading);
+  io.emit("reading:new", reading);
   return reading;
 }
 
@@ -76,7 +88,6 @@ function getLatestReadings(): TankReading[] {
   return Array.from(latestByTank.values());
 }
 
-const app = express();
 const PORT = 3001;
 
 app.use(cors());
@@ -101,6 +112,15 @@ app.get("/api/readings/latest", (_req: Request, res: Response) => {
   res.json(getLatestReadings());
 });
 
-app.listen(PORT, () => {
+io.on("connection", (socket) => {
+  console.log(`Socket.IO client connected: ${socket.id}`);
+
+  socket.on("disconnect", () => {
+    console.log(`Socket.IO client disconnected: ${socket.id}`);
+  });
+});
+
+httpServer.listen(PORT, () => {
   console.log(`Backend listening on http://localhost:${PORT}`);
+  console.log(`Socket.IO ready for http://localhost:3000`);
 });
