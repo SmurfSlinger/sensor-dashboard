@@ -18,13 +18,15 @@ REST API is the typical request/receive style. A browser or app sends a request 
 >
 > **Server:** "Yes, here it is."
 
-| Method  | Purpose                    |
-| ------- | -------------------------- |
-| GET     | read something             |
-| POST    | create/send something      |
-| PUT     | replace/update something   |
-| PATCH   | partially update something |
-| DELETE  | delete something           |
+
+| Method | Purpose                    |
+| ------ | -------------------------- |
+| GET    | read something             |
+| POST   | create/send something      |
+| PUT    | replace/update something   |
+| PATCH  | partially update something |
+| DELETE | delete something           |
+
 
 **Example:**
 
@@ -105,12 +107,14 @@ Then, anything subscribed to that topic receives it.
 
 **4 Parts:**
 
-| Part        | Role                                              |
-| ----------- | ------------------------------------------------- |
-| Publisher   | sends messages (sensor/device)                    |
-| Subscriber  | listens for messages (backend service)            |
-| Broker      | middleman that receives and distributes messages (server) |
-| Topic       | channel/path messages are sent to                 |
+
+| Part       | Role                                                      |
+| ---------- | --------------------------------------------------------- |
+| Publisher  | sends messages (sensor/device)                            |
+| Subscriber | listens for messages (backend service)                    |
+| Broker     | middleman that receives and distributes messages (server) |
+| Topic      | channel/path messages are sent to                         |
+
 
 **Structure:**
 
@@ -142,13 +146,16 @@ MQTT is often better for IoT because devices can just publish telemetry without 
 
 ## Proposed Structure
 
-| Area           | Choice                                                                 |
-| -------------- | ---------------------------------------------------------------------- |
-| Sensor type    | Tank level sensor implementation.                                      |
-| Tank type      | Generic industrial storage tank for reusability and versatility across areas like pressure, temperature, or flow without rewriting the whole app. |
-| Scale          | Multiple generic industrial tanks, all using the same tank-level sensor model. |
-| API            | Begin with REST ingestion, but design a boundary so MQTT can be added later in a simple way. |
-| Update method  | WebSockets to support time-sensitive, frequent, and continuous updates to frontend without manual refresh or polling overhead. REST is useful for historical data retrieval, but WebSockets better support live readings/alerts. |
-| Backend        | Node.js, Express, Socket.IO                                           |
+
+| Area          | Choice                                                                                                                                                                                                                           |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sensor type   | Tank level sensor implementation.                                                                                                                                                                                                |
+| Tank type     | Generic industrial storage tank for reusability and versatility across areas like pressure, temperature, or flow without rewriting the whole app.                                                                                |
+| Scale         | Multiple generic industrial tanks, all using the same tank-level sensor model.                                                                                                                                                   |
+| API           | Begin with REST ingestion, but design a boundary so MQTT can be added later in a simple way.                                                                                                                                     |
+| Update method | WebSockets to support time-sensitive, frequent, and continuous updates to frontend without manual refresh or polling overhead. REST is useful for historical data retrieval, but WebSockets better support live readings/alerts. |
+| Backend       | Node.js, Express, Socket.IO                                                                                                                                                                                                      |
+
 
 > **Design note:** Example tanks for the prototype — `tank-001` North Storage Tank, `tank-002` West Process Tank, `tank-003` Reserve Tank. Keep names generic; avoid water/fuel/chemical-specific modeling.
+
